@@ -1,0 +1,7 @@
+﻿;these phrases will trigger a reply
+;each phrase is separated by a new line
+;please note that the check is case insensitive
+
+Wowzers!
+RedditQuoteBot
+my vision is augmented

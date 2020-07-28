@@ -1,0 +1,4 @@
+﻿;these reddit users will be ignored (no replies for their comments)
+
+spez
+kemitche

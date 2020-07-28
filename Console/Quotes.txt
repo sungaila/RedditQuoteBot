@@ -1,0 +1,9 @@
+﻿;these quotes will be replied to comments with trigger phrases
+
+;you can use the following macros
+;{br} for line breaks
+;{author} for the reddit user name replied to
+;{subreddit} for the context subreddit name
+
+Oops, I forgot to replace the default quotes for my reddit bot. 😓
+I'm sorry {author}, I'm afraid I can't do that.{br}I also forgot to edit the Quotes.txt file for my reddit bot.

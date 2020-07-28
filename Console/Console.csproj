@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Assembly -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>RedditQuoteBot.Console</AssemblyName>
+    <RootNamespace>RedditQuoteBot.Console</RootNamespace>
+    <StartupObject>RedditQuoteBot.Console.Program</StartupObject>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- C# compiler -->
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <Features>strict</Features>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Config.ini" />
+    <None Remove="IgnoredUserNames.txt" />
+    <None Remove="Quotes.txt" />
+    <None Remove="Subreddits.txt" />
+    <None Remove="TriggerPhrases.txt" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Config.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IgnoredUserNames.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Quotes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TriggerPhrases.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Subreddits.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+</Project>
