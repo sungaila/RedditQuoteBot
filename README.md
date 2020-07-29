@@ -36,7 +36,7 @@ Open the **Config.ini** file and fill in the following information:
 * **AppClientId** the smaller random text from step 0
 * **AppClientSecret** the larger random text from step 0
 * **BotUserName** the reddit name of your bot account
-* **AppClientSecret** the reddit password of your bot account
+* **BotUserPassword** the reddit password of your bot account
 
 ### 3. (Optional) Change settings of the bot
 There are a few more settings within **Config.ini**.
