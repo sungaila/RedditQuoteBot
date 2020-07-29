@@ -29,7 +29,7 @@ Do not share this information and keep it to yourself!
 ### 1. Download the latest RedditQuoteBot.Console release
 Open [the latest release](https://github.com/sungaila/RedditQuoteBot/releases/latest). If you are running Windows, you will most likely need the  **RedditQuoteBot.Console_x.x.x_standalone_win-x64.zip** archive.
 
-Download the archive an extract it somewhere on your PC.
+Download the archive and extract it somewhere on your PC.
 
 ### 2. Fill in the credentials
 Open the **Config.ini** file and fill in the following information:
@@ -54,15 +54,15 @@ The bot will not reply to users listed here.
 Open the **TriggerPhrases.txt** file.
 Write a new line for each phrase the bot should reply to.
 
-Please not that the check is case insensitive (there is no difference between *we did it* and *WE did IT*).
+Please note that the check is case insensitive (there is no difference between `we did it` and `WE did IT`).
 
-Also note that the phrases are not checked as whole words. If your phrase is *use it*, then the bot will trigger on comments like *we should ab**use it***.
+Also note that the phrases are not checked as whole words. If your phrase is `use it`, then the bot will trigger on comments like `we should abuse it`.
 
 ### 7. Define the quotes
 Open the **Quotes.txt** file.
-Each line is a potential quote of the bot to use. Use the **{br}** macro for line breaks within the same quote.
+Each line is a potential quote of the bot to use. Use the `{br}` macro for line breaks within the same quote.
 
-There are a few more macros availalbe like **{author}** and **{subreddit}**. Check the comments in **Quotes.txt** for more information.
+There are a few more macros availalbe like `{author}` or `{subreddit}`. Check the comments in **Quotes.txt** for more information.
 
 Please note that the quotes are interpreted as [reddit markdown](https://www.reddit.com/wiki/markdown). So you might need to escape characters like # when used in your quotes. You can make use of this markdown for formatting as well.
 
