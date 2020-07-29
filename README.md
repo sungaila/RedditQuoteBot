@@ -62,7 +62,7 @@ Also note that the phrases are not checked as whole words. If your phrase is `us
 Open the **Quotes.txt** file.
 Each line is a potential quote of the bot to use. Use the `{br}` macro for line breaks within the same quote.
 
-There are a few more macros availalbe like `{author}` or `{subreddit}`. Check the comments in **Quotes.txt** for more information.
+There are a few more macros available like `{author}` or `{subreddit}`. Check the comments in **Quotes.txt** for more information.
 
 Please note that the quotes are interpreted as [reddit markdown](https://www.reddit.com/wiki/markdown). So you might need to escape characters like # when used in your quotes. You can make use of this markdown for formatting as well.
 
