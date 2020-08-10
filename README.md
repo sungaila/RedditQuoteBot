@@ -1,11 +1,13 @@
 <img src="https://raw.githubusercontent.com/sungaila/RedditQuoteBot/master/Icon.png" align="left" width="64" height="64" alt="RedditQuoteBot Logo">
 
 # RedditQuoteBot
+[![NuGet version](https://img.shields.io/nuget/v/RedditQuoteBot.svg?style=flat-square)](https://www.nuget.org/packages/RedditQuoteBot/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/RedditQuoteBot.svg?style=flat-square)](https://www.nuget.org/packages/RedditQuoteBot/)
+[![GitHub license](https://img.shields.io/github/license/sungaila/RedditQuoteBot?style=flat-square)](https://github.com/sungaila/RedditQuoteBot/blob/master/LICENSE)
+
 A reddit bot scanning comments for trigger phrases to reply with predefined quotes.
 
 The class library is built on top of **.NET Standard 2.0** and the console app on **.NET Core 3.1**.
-
-Feel free to grab it from [NuGet.org](https://www.nuget.org/packages/RedditQuoteBot) or to fork it for your own needs!
 
 <img src="https://raw.githubusercontent.com/sungaila/RedditQuoteBot/master/Content/Screenshot_1.0.0.png" width="390" alt="Screenshot from version 1.0.0">
 
