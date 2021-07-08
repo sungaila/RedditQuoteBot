@@ -26,7 +26,8 @@ namespace RedditQuoteBot.Console
                 Settings.ApplicationVersion,
                 Settings.Ratelimit,
                 Settings.MaxCommentAge,
-                Settings.CommentLimit);
+                Settings.CommentLimit,
+                Settings.RateComment);
 
             var tokenSource = new CancellationTokenSource();
             var task = client.RunAsync(tokenSource.Token);

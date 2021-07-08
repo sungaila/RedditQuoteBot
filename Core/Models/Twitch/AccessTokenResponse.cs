@@ -2,13 +2,16 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
-namespace RedditQuoteBot.Core.Models
+namespace RedditQuoteBot.Core.Models.Twitch
 {
     [DebuggerDisplay("Token = {Token}, ExpiresAtLocal = {ExpiresAtLocal}")]
     internal class AccessTokenResponse
     {
         [JsonPropertyName("access_token")]
         public string? Token { get; set; }
+
+        [JsonPropertyName("refresh_token")]
+        public string? RefreshToken { get; set; }
 
         [JsonPropertyName("token_type")]
         public string? Type { get; set; }

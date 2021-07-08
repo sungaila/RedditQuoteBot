@@ -23,6 +23,8 @@ namespace RedditQuoteBot.Core
 
         private readonly TimeSpan _minRatelimit = TimeSpan.FromSeconds(1);
 
+        private readonly TimeSpan _minRateComment = TimeSpan.FromMinutes(1);
+
         private AccessTokenResponse? AccessTokenResponse { get; set; }
 
         private DateTime LastRequest { get; set; } = DateTime.MinValue;
@@ -87,6 +89,11 @@ namespace RedditQuoteBot.Core
         public int CommentLimit { get; } = 3;
 
         /// <summary>
+        /// The minimum period to wait between replies.
+        /// </summary>
+        public TimeSpan RateComment { get; } = TimeSpan.FromHours(1);
+
+        /// <summary>
         /// The User-Agent used for HTTP requests.
         /// </summary>
         public string UserAgent { get; }
@@ -102,11 +109,12 @@ namespace RedditQuoteBot.Core
         /// <param name="triggerPhrases">The phrases the queried comments are scanned for.</param>
         /// <param name="quotes">The quotes that might be posted as comments.</param>
         /// <param name="ignoredUserNames">The reddit user names that will be ignored and not replied to.</param>
-        /// <param name="applicationName">The application version used for the User-Agent. Defaults to <c>Assembly.GetEntryAssembly().GetName().Name</c>.</param>
-        /// <param name="applicationVersion">The application version used for the User-Agent. Defaults to <c>Assembly.GetEntryAssembly().GetName().Version</c>.</param>
+        /// <param name="applicationName">The application version used for the User-Agent. Defaults to <c>GetType().Assembly.GetName().Name</c>.</param>
+        /// <param name="applicationVersion">The application version used for the User-Agent. Defaults to <c>GetType().Assembly.GetName().Version.ToString()</c>.</param>
         /// <param name="ratelimit">The minimum period to wait between HTTP requests. Defaults to 10 seconds.</param>
         /// <param name="maxCommentAge">The maximum age of comments to consider for replies. Defaults to 8 hours.</param>
         /// <param name="commentLimit">The maximum replies within a single link.</param>
+        /// <param name="rateComment">The minimum period to wait between replies. Defaults to 1 hour.</param>
         public RedditClient(
             string appClientId,
             string appClientSecret,
@@ -120,7 +128,8 @@ namespace RedditQuoteBot.Core
             string? applicationVersion = null,
             TimeSpan? ratelimit = null,
             TimeSpan? maxCommentAge = null,
-            int commentLimit = 3)
+            int commentLimit = 3,
+            TimeSpan? rateComment = null)
         {
             if (string.IsNullOrEmpty(appClientId))
                 throw new ArgumentException("The app client id cannot be null or empty.", nameof(appClientId));
@@ -161,12 +170,13 @@ namespace RedditQuoteBot.Core
             Quotes = quotes;
             IgnoredUserNames = ignoredUserNames ?? new List<string>();
 
-            ApplicationName = (!string.IsNullOrEmpty(applicationName) ? applicationName : Assembly.GetEntryAssembly().GetName().Name)!;
-            ApplicationVersion = (!string.IsNullOrEmpty(applicationVersion) ? applicationVersion : Assembly.GetEntryAssembly().GetName().Version.ToString())!;
+            ApplicationName = (!string.IsNullOrEmpty(applicationName) ? applicationName : GetType().Assembly.GetName().Name)!;
+            ApplicationVersion = (!string.IsNullOrEmpty(applicationVersion) ? applicationVersion : GetType().Assembly.GetName().Version.ToString())!;
 
             Ratelimit = ratelimit ?? Ratelimit;
             MaxCommentAge = maxCommentAge ?? MaxCommentAge;
             CommentLimit = Math.Max(commentLimit, 1);
+            RateComment = rateComment ?? RateComment;
 
             UserAgent = $"script:{ApplicationName}:{ApplicationVersion} (by /u/{BotUserName})";
             Console.WriteLine($"User-Agent: \"{UserAgent}\"");
@@ -220,7 +230,68 @@ namespace RedditQuoteBot.Core
             {
                 var availableIn = availableAt.Subtract(DateTime.UtcNow);
 
-                Console.WriteLine($"Delay for {availableIn} ({availableAt}).");
+                Console.WriteLine($"Delay for {availableIn} (until {availableAt}).");
+                await Task.Delay(availableIn, cancellationToken);
+            }
+
+            LastRequest = DateTime.UtcNow;
+        }
+
+        private async Task ThrottleReplyAsync(CancellationToken cancellationToken)
+        {
+            Console.WriteLine();
+
+            await CheckAuthentication(cancellationToken);
+
+            ListingResponse? result = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"https://oauth.reddit.com/user/{BotUserName}/comments/?limit=1", cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Failed to request bot comments.");
+                    Console.WriteLine(response.ReasonPhrase);
+                    throw new InvalidOperationException("Failed to receive listing response.");
+                }
+
+                var responseContent = await response.Content.ReadAsStreamAsync();
+                result = await JsonSerializer.DeserializeAsync<ListingResponse>(responseContent, null, cancellationToken);
+
+                if (result == null)
+                    throw new InvalidOperationException("Failed to receive listing response.");
+            }
+            catch (TaskCanceledException)
+            {
+                // task cancellation can be ignored
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to request bot comments.");
+                Console.WriteLine(ex);
+                throw;
+            }
+
+            if (result?.Data == null)
+                return;
+
+            // null means the bot has no comments yet (or the request went wrong)
+            var latestComment = result.Data.Children.Select(child => child.Data!).SingleOrDefault();
+
+            var ratelimit = TimeSpan.FromTicks(Math.Max(RateComment.Ticks, _minRateComment.Ticks));
+            var availableAt = latestComment != null
+                ? latestComment.CreatedUtc.Add(ratelimit)
+                : DateTime.MinValue;
+
+            if (DateTime.UtcNow < availableAt)
+            {
+                var availableIn = availableAt.Subtract(DateTime.UtcNow);
+
+                if (latestComment != null)
+                    Console.WriteLine($"Latest bot comment was from {latestComment.CreatedLocal}.");
+
+                Console.WriteLine($"Delay for {availableIn} (until {availableAt}).");
                 await Task.Delay(availableIn, cancellationToken);
             }
 
@@ -229,7 +300,7 @@ namespace RedditQuoteBot.Core
 
         private async Task CheckAuthentication(CancellationToken cancellationToken)
         {
-            if (AccessTokenResponse == null || string.IsNullOrEmpty(AccessTokenResponse.Token) || AccessTokenResponse.ExpiresAt <= DateTime.UtcNow)
+            if (AccessTokenResponse == null || string.IsNullOrEmpty(AccessTokenResponse.Token) || AccessTokenResponse.ExpiresAtUtc <= DateTime.UtcNow)
                 await AuthenticateAsync(cancellationToken);
         }
 
@@ -283,6 +354,7 @@ namespace RedditQuoteBot.Core
         {
             await CheckAuthentication(cancellationToken);
             await ThrottleRequestsAsync(cancellationToken);
+            await ThrottleReplyAsync(cancellationToken);
 
             Console.Write($"Request comments for subreddit /r/{subreddit} ... ");
             ListingResponse? result = null;
@@ -318,7 +390,7 @@ namespace RedditQuoteBot.Core
                 throw;
             }
 
-            if (result.Data == null)
+            if (result?.Data == null)
                 return new List<CommentData>();
 
             var candidates = result.Data.Children.Select(child => child.Data!).ToList();
@@ -397,7 +469,7 @@ namespace RedditQuoteBot.Core
 
             try
             {
-                response = await _httpClient.PostAsync("https://oauth.reddit.com/api/comment", content);
+                response = await _httpClient.PostAsync("https://oauth.reddit.com/api/comment", content, cancellationToken);
 
                 LogReply(comment, quoteId);
 

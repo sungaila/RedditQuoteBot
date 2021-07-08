@@ -7,6 +7,7 @@
     <EmbedAllSources>true</EmbedAllSources>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>RedditQuoteBot.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- NuGet -->
@@ -14,6 +15,7 @@
     <PackageId>RedditQuoteBot</PackageId>
     <Product>RedditQuoteBot</Product>
     <Version>1.1.0</Version>
+    <VersionSuffix></VersionSuffix>
     <Authors>David Sungaila</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -39,11 +41,15 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
+  <!-- Debug builds -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <VersionSuffix>debug</VersionSuffix>
+  </PropertyGroup>
+
   <!-- Release builds -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <SignAssembly>true</SignAssembly>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <DocumentationFile>bin\Release\RedditQuoteBot.xml</DocumentationFile>
   </PropertyGroup>
 
   <!-- NuGet Icon -->

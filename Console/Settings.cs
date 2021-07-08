@@ -22,6 +22,7 @@ namespace RedditQuoteBot.Console
             Ratelimit = TimeSpan.FromSeconds(int.Parse(iniData["Options"]["Ratelimit"]));
             MaxCommentAge = TimeSpan.FromSeconds(int.Parse(iniData["Options"]["MaxCommentAge"]));
             CommentLimit = int.Parse(iniData["Options"]["CommentLimit"]);
+            RateComment = TimeSpan.FromSeconds(int.Parse(iniData["Options"]["RateComment"]));
 
             ApplicationName = iniData["UserAgent"]["ApplicationName"];
             ApplicationVersion = iniData["UserAgent"]["ApplicationVersion"];
@@ -57,6 +58,8 @@ namespace RedditQuoteBot.Console
 
         public static readonly int CommentLimit;
 
+        public static readonly TimeSpan RateComment;
+
         public static readonly string ApplicationName;
 
         public static readonly string ApplicationVersion;
@@ -68,5 +71,21 @@ namespace RedditQuoteBot.Console
         public static readonly IList<string> TriggerPhrases;
 
         public static readonly IList<string> Quotes;
+
+        public static class Twitch
+        {
+            static Twitch()
+            {
+                var iniParser = new FileIniDataParser();
+                IniData iniData = iniParser.ReadFile("Config.ini");
+
+                AppClientId = iniData["Twitch"]["AppClientId"];
+                AppClientSecret = iniData["Twitch"]["AppClientSecret"];
+            }
+
+            public static readonly string AppClientId;
+
+            public static readonly string AppClientSecret;
+        }
     }
 }
