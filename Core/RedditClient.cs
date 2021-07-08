@@ -159,7 +159,7 @@ namespace RedditQuoteBot.Core
             Subreddits = subreddits;
             TriggerPhrases = triggerPhrases;
             Quotes = quotes;
-            IgnoredUserNames = ignoredUserNames ?? IgnoredUserNames;
+            IgnoredUserNames = ignoredUserNames ?? new List<string>();
 
             ApplicationName = (!string.IsNullOrEmpty(applicationName) ? applicationName : Assembly.GetEntryAssembly().GetName().Name)!;
             ApplicationVersion = (!string.IsNullOrEmpty(applicationVersion) ? applicationVersion : Assembly.GetEntryAssembly().GetName().Version.ToString())!;
@@ -215,7 +215,7 @@ namespace RedditQuoteBot.Core
             Console.WriteLine();
             var ratelimit = TimeSpan.FromTicks(Math.Max(Ratelimit.Ticks, _minRatelimit.Ticks));
             var availableAt = LastRequest.Add(ratelimit);
-            
+
             if (DateTime.UtcNow < availableAt)
             {
                 var availableIn = availableAt.Subtract(DateTime.UtcNow);
@@ -255,6 +255,9 @@ namespace RedditQuoteBot.Core
                 var response = await _httpClient.PostAsync("https://www.reddit.com/api/v1/access_token", content, cancellationToken);
                 string responseContent = await response.Content.ReadAsStringAsync();
                 AccessTokenResponse = JsonSerializer.Deserialize<AccessTokenResponse>(responseContent);
+
+                if (AccessTokenResponse?.Token == null)
+                    throw new InvalidOperationException("Failed to receive access token.");
 
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                        "Bearer",
@@ -298,6 +301,9 @@ namespace RedditQuoteBot.Core
                 var responseContent = await response.Content.ReadAsStreamAsync();
                 result = await JsonSerializer.DeserializeAsync<ListingResponse>(responseContent, null, cancellationToken);
 
+                if (result == null)
+                    throw new InvalidOperationException("Failed to receive listing response.");
+
                 Console.WriteLine("succeeded.");
             }
             catch (TaskCanceledException)
@@ -310,7 +316,7 @@ namespace RedditQuoteBot.Core
                 Console.WriteLine("failed.");
                 Console.WriteLine(ex);
                 throw;
-            }            
+            }
 
             if (result.Data == null)
                 return new List<CommentData>();

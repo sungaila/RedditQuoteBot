@@ -1,5 +1,4 @@
 ﻿using RedditQuoteBot.Core;
-using System;
 using System.Reflection;
 using System.Threading;
 

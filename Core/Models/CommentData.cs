@@ -1,8 +1,6 @@
 ﻿using RedditQuoteBot.Core.Converters;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace RedditQuoteBot.Core.Models

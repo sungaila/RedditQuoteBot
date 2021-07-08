@@ -2,7 +2,7 @@
   <!-- Assembly -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>RedditQuoteBot.Console</AssemblyName>
     <RootNamespace>RedditQuoteBot.Console</RootNamespace>
     <StartupObject>RedditQuoteBot.Console.Program</StartupObject>
@@ -11,12 +11,14 @@
 
   <!-- C# compiler -->
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <Features>strict</Features>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Remove="Config.ini" />
     <None Remove="IgnoredUserNames.txt" />
@@ -24,7 +26,7 @@
     <None Remove="Subreddits.txt" />
     <None Remove="TriggerPhrases.txt" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Include="Config.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -47,7 +49,7 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
   </ItemGroup>
